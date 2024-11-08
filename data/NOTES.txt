@@ -1,0 +1,8 @@
+
+# PASSWORD: From Sisgrate's DB2 
+
+# Get to prompt: 
+psql -U postgres -d test_db 
+
+# Slurp in .sql file
+psql -U postgres -d test_db -f data.sql  

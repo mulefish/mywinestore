@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Winestore</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<h1>Welcome to Winestore NOW WITH THYMELEAF ACTION!</h1>
+
+<!-- GET All Wines -->
+<button onclick="getAllWines()">Get All Wines</button>
+<div id="all-wines-output"></div>
+
+<!-- GET Wine by ID -->
+<input type="number" id="wine-id" placeholder="Wine ID">
+<button onclick="getWineById()">Get Wine by ID</button>
+<div id="wine-by-id-output"></div>
+
+<!-- POST Create Wine -->
+<input type="text" id="new-wine-name" placeholder="Wine Name">
+<input type="text" id="new-wine-year" placeholder="Year">
+<input type="text" id="new-wine-price" placeholder="Price">
+<input type="text" id="new-wine-region" placeholder="Region">
+<button onclick="createWine()">Create Wine</button>
+<div id="create-wine-output"></div>
+
+<!-- DELETE Wine by ID -->
+<input type="number" id="delete-wine-id" placeholder="Wine ID to Delete">
+<button onclick="deleteWine()">Delete Wine</button>
+<div id="delete-wine-output"></div>
+
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>
