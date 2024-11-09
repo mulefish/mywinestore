@@ -12,7 +12,25 @@
 </head>
 <body>
 <h1>Wine Store</h1>
-<button onclick="fetchWines()">Get Wines HELLO</button>
+
+<!-- Form to Add or Update Wine -->
+<h2>Add / Update Wine</h2>
+<form id="wineForm" onsubmit="event.preventDefault(); submitWineForm();">
+    <input type="hidden" id="wineId">
+    <label>Type: <input type="text" id="wineType"></label><br>
+    <label>Variety: <input type="text" id="wineVariety"></label><br>
+    <label>Year: <input type="number" id="wineYear"></label><br>
+    <label>Region: <input type="text" id="wineRegion"></label><br>
+    <label>Price: <input type="number" id="winePrice"></label><br>
+    <label>Top Note: <input type="text" id="wineTopnote"></label><br>
+    <label>Bottom Note: <input type="text" id="wineBottomnote"></label><br>
+    <button type="submit">Save Wine</button>
+</form>
+
+<!-- Button to Fetch Wines -->
+<button onclick="fetchWines()">Get Wines</button>
+
+<!-- Wine List -->
 <div id="wines"></div>
 
 <!-- Link to external JavaScript file -->
