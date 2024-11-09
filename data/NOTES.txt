@@ -6,3 +6,54 @@ psql -U postgres -d test_db
 
 # Slurp in .sql file
 psql -U postgres -d test_db -f data.sql  
+
+# 
+CREATE TABLE wines (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    variety VARCHAR(30) NOT NULL,
+    year INT CHECK (year BETWEEN 1900 AND 2100),
+    region VARCHAR(30),
+    price INT CHECK (price >= 0),
+    topnote VARCHAR(20),
+    bottomnote VARCHAR(20)
+);
+CREATE TABLE wine_vectors (
+    id INT PRIMARY KEY,      -- Wine ID to link back to the wines table
+    type_red INT,            -- One-hot encoded columns for each unique type
+    type_white INT,
+    type_rose INT,
+    type_sparkling INT,
+    type_dessert INT,
+    type_fortified INT,
+    variety_cabernet_sauvignon INT, -- One-hot encoded columns for each unique variety
+    variety_pinot_noir INT,
+    variety_chardonnay INT,
+    variety_merlot INT,
+    variety_sauvignon_blanc INT,
+    variety_syrah INT,
+    variety_malbec INT,
+    variety_zinfandel INT,
+    variety_riesling INT,
+    region_bordeaux INT,      -- One-hot encoded columns for each unique region
+    region_napa_valley INT,
+    region_tuscany INT,
+    region_rioja INT,
+    region_barossa_valley INT,
+    region_champagne INT,
+    region_mosel INT,
+    region_mendoza INT,
+    region_sonoma INT,
+    topnote_earthy INT,       -- One-hot encoded columns for each unique topnote
+    topnote_bold INT,
+    topnote_woody INT,
+    topnote_fruity INT,
+    topnote_citrus INT,
+    bottomnote_floral INT,    -- One-hot encoded columns for each unique bottomnote
+    bottomnote_spicy INT,
+    bottomnote_vanilla INT,
+    bottomnote_oak INT,
+    normalized_year FLOAT,    -- Normalized year as a float value
+    normalized_price FLOAT    -- Normalized price as a float value
+);
