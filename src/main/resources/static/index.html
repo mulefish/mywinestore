@@ -27,9 +27,16 @@
     <button type="submit">Save Wine</button>
 </form>
 
-<!-- Buttons to Fetch All Wines or Top 10 Wines -->
+<!-- Search Form for Wines by Topnote -->
+<h2>Search Wines by Topnote</h2>
+<form id="searchForm" onsubmit="event.preventDefault(); searchWinesByTopnote();">
+    <label>Top Note: <input type="text" id="searchTopnote"></label>
+    <button type="submit">Search</button>
+</form>
+
+<!-- Buttons to Fetch All Wines or Next 10 Wines -->
 <button onclick="fetchAllWines()">Get All Wines</button>
-<button onclick="fetchTop10Wines()">Get Top 10 Wines</button>
+<button onclick="fetchNext10Wines()">Get Next 10 Wines</button>
 
 <!-- Wine List -->
 <div id="wines"></div>

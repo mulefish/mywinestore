@@ -1,6 +1,11 @@
+
+
+let page = 0; // Keeps track of the current page for pagination
+
 async function fetchAllWines() {
+    page = 0; // Reset page counter when fetching all wines
     try {
-        const response = await fetch('/api/wines/all'); // Call the /all endpoint
+        const response = await fetch('/api/wines/all');
         if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText);
         }
@@ -8,6 +13,34 @@ async function fetchAllWines() {
         displayWines(wines);
     } catch (error) {
         console.error('Fetch error:', error);
+    }
+}
+
+async function fetchNext10Wines() {
+    try {
+        const response = await fetch(`/api/wines/next10?page=${page}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        const wines = await response.json();
+        displayWines(wines);
+        page++; // Increment page for the next "next 10" call
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+}
+
+async function searchWinesByTopnote() {
+    const topnote = document.getElementById('searchTopnote').value;
+    try {
+        const response = await fetch(`/api/wines/search?topnote=${encodeURIComponent(topnote)}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        const wines = await response.json();
+        displayWines(wines);
+    } catch (error) {
+        console.error('Search error:', error);
     }
 }
 
@@ -89,6 +122,7 @@ function displayWines(wines) {
         const wineDiv = document.createElement('div');
         wineDiv.className = 'wine-item';
         wineDiv.innerHTML = `
+         <strong>ID:</strong> ${wine.id} <br>
             <strong>Type:</strong> ${wine.type} <br>
             <strong>Variety:</strong> ${wine.variety} <br>
             <strong>Year:</strong> ${wine.year} <br>
