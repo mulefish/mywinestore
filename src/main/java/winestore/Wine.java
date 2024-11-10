@@ -23,6 +23,7 @@ public class Wine {
     private Integer price;
     private String topnote;
     private String bottomnote;
+
 }
 
 

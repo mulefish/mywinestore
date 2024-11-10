@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -17,6 +20,13 @@ public class WineController {
 
     private final WineRepository wineRepository;
     private final WineVectorRepository wineVectorRepository;
+
+    // Predefined vectors for descriptors
+    private static final Map<String, double[]> descriptorVectors = new HashMap<>() {{
+        put("spicy", new double[]{0.8, 0.1, 0.1});
+        put("fruity", new double[]{0.3, 0.7, 0.0});
+        put("bubbly", new double[]{0.2, 0.2, 0.6});
+    }};
 
     @Autowired
     public WineController(WineRepository wineRepository, WineVectorRepository wineVectorRepository) {
@@ -36,14 +46,24 @@ public class WineController {
         return wineVectorRepository.findByCriteria(criteria);
     }
 
-    // Endpoint to find the 5 closest wines based on topnote vector
+    // Endpoint to find the 5 closest wines based on topnote vector or descriptor
     @GetMapping("/vectors/search")
     public List<Wine> findClosestWines(@RequestParam String topnoteVector) {
-        String[] vectorStrings = topnoteVector.split(",");
-        double[] inputVector = Arrays.stream(vectorStrings).mapToDouble(Double::parseDouble).toArray();
+        double[] inputVector;
+
+        // Check if topnoteVector is a descriptor (like "spicy")
+        if (descriptorVectors.containsKey(topnoteVector.toLowerCase())) {
+            inputVector = descriptorVectors.get(topnoteVector.toLowerCase());
+        } else {
+            // Parse as numeric vector if not a descriptor
+            inputVector = Arrays.stream(topnoteVector.split(","))
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
+        }
 
         List<Wine> allWines = wineRepository.findAll();
         return allWines.stream()
+                .filter(wine -> parseVector(wine.getTopnote()).length == inputVector.length) // Ensure vector length matches
                 .sorted((wine1, wine2) -> Double.compare(
                         cosineSimilarity(inputVector, parseVector(wine2.getTopnote())),
                         cosineSimilarity(inputVector, parseVector(wine1.getTopnote()))
@@ -55,7 +75,16 @@ public class WineController {
     // Helper function to parse topnote strings into vectors
     private double[] parseVector(String topnote) {
         return Arrays.stream(topnote.split(","))
-                .mapToDouble(Double::parseDouble)
+                .map(value -> {
+                    try {
+                        return Double.parseDouble(value);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Non-numeric value in topnote: " + value);
+                        return null;  // Return null to handle gracefully
+                    }
+                })
+                .filter(Objects::nonNull) // Remove any null values resulting from non-numeric entries
+                .mapToDouble(Double::doubleValue)
                 .toArray();
     }
 

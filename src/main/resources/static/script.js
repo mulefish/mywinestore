@@ -153,14 +153,40 @@ async function searchWineVectors(criteria) {
     return data;
 }
 
-// Function to find closest wines based on topnote vector
+//// Function to find closest wines based on topnote vector
+//function findClosestWines() {
+//    const vectorInput = document.getElementById('vectorInput').value;
+//    const vector = vectorInput.split(',').map(Number);
+//
+//    fetch(`/api/wines/vectors/search?topnoteVector=${vector.join(',')}`)
+//        .then(response => response.json())
+//        .then(data => {
+//            const closestWinesDiv = document.getElementById('closestWines');
+//            closestWinesDiv.innerHTML = `<h3>Closest Wines:</h3>` + data.map(wine => `
+//                <div class="wine-item">
+//                    <p><strong>${wine.type} ${wine.variety}</strong> (${wine.year}) - ${wine.region}</p>
+//                    <p>Price: $${wine.price}</p>
+//                    <p>Top Note: ${wine.topnote}</p>
+//                    <p>Bottom Note: ${wine.bottomnote}</p>
+//                </div>
+//            `).join('');
+//        })
+//        .catch(error => console.error('Error fetching closest wines:', error));
+//}
+//
+
 function findClosestWines() {
     const vectorInput = document.getElementById('vectorInput').value;
     const vector = vectorInput.split(',').map(Number);
 
     fetch(`/api/wines/vectors/search?topnoteVector=${vector.join(',')}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
         .then(data => {
+            if (!Array.isArray(data)) throw new TypeError('Expected array response');
+
             const closestWinesDiv = document.getElementById('closestWines');
             closestWinesDiv.innerHTML = `<h3>Closest Wines:</h3>` + data.map(wine => `
                 <div class="wine-item">
@@ -173,7 +199,6 @@ function findClosestWines() {
         })
         .catch(error => console.error('Error fetching closest wines:', error));
 }
-
 
 //// Example usage
 //searchWineVectors("desired_criteria")
