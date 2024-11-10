@@ -136,3 +136,46 @@ function displayWines(wines) {
         winesDiv.appendChild(wineDiv);
     });
 }
+
+async function searchWineVectors(criteria) {
+    const response = await fetch(`/api/wines/vectors/search?criteria=${encodeURIComponent(criteria)}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch wine vectors");
+    }
+    const data = await response.json();
+    console.log("Wine Vectors:", data);
+    return data;
+}
+
+// Function to find closest wines based on topnote vector
+function findClosestWines() {
+    const vectorInput = document.getElementById('vectorInput').value;
+    const vector = vectorInput.split(',').map(Number);
+
+    fetch(`/api/wines/vectors/search?topnoteVector=${vector.join(',')}`)
+        .then(response => response.json())
+        .then(data => {
+            const closestWinesDiv = document.getElementById('closestWines');
+            closestWinesDiv.innerHTML = `<h3>Closest Wines:</h3>` + data.map(wine => `
+                <div class="wine-item">
+                    <p><strong>${wine.type} ${wine.variety}</strong> (${wine.year}) - ${wine.region}</p>
+                    <p>Price: $${wine.price}</p>
+                    <p>Top Note: ${wine.topnote}</p>
+                    <p>Bottom Note: ${wine.bottomnote}</p>
+                </div>
+            `).join('');
+        })
+        .catch(error => console.error('Error fetching closest wines:', error));
+}
+
+
+//// Example usage
+//searchWineVectors("desired_criteria")
+//    .then(vectors => console.log("Retrieved Vectors:", vectors))
+//    .catch(error => console.error("Error:", error));

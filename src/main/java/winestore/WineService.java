@@ -1,25 +1,3 @@
-//package winestore;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//
-//@Service
-//public class WineService {
-//
-//    private final WineRepository wineRepository;
-//
-//    @Autowired
-//    public WineService(WineRepository wineRepository) {
-//        this.wineRepository = wineRepository;
-//    }
-//
-//    public List<Wine> getTop10Wines() {
-//        return wineRepository.findTop10By();
-//    }
-//}
-
 package winestore;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +10,13 @@ public class WineService {
 
     private static final Logger logger = Logger.getLogger(WineService.class.getName());
     private final WineRepository wineRepository;
+    private final WineVectorRepository wineVectorRepository;
 
     @Autowired
-    public WineService(WineRepository wineRepository) {
+    public WineService(WineRepository wineRepository, WineVectorRepository wineVectorRepository) {
         this.wineRepository = wineRepository;
-        logger.info("WineService instantiated with WineRepository");
+        this.wineVectorRepository = wineVectorRepository;
+        logger.info("WineService instantiated with WineRepository and WineVectorRepository");
     }
 
     public List<Wine> getTop10Wines() {
@@ -51,5 +31,9 @@ public class WineService {
         return top10Wines;
     }
 
-
+    public List<WineVector> searchWineVectors(String criteria) {
+        logger.info("searchWineVectors called with criteria: " + criteria);
+        List<WineVector> vectors = wineVectorRepository.findByCriteria(criteria);
+        return vectors;
+    }
 }

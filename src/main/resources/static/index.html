@@ -13,7 +13,19 @@
 <body>
 <h1>Wine Store</h1>
 
+<!-- Find Similar Wines by Topnote Vector -->
+<h2>Find Similar Wines by Topnote Vector</h2>
+<form id="vectorSearchForm" onsubmit="event.preventDefault(); findClosestWines();">
+    <label>Topnote Vector (comma-separated): <input type="text" id="vectorInput" placeholder="e.g., 0.8, 0.5, 0.3"></label>
+    <button type="submit">Find Similar Wines</button>
+</form>
+
+<!-- Display closest wine results -->
+<div id="closestWines"></div>
+
+
 <!-- Form to Add or Update Wine -->
+
 <h2>Add / Update Wine</h2>
 <form id="wineForm" onsubmit="event.preventDefault(); submitWineForm();">
     <input type="hidden" id="wineId">

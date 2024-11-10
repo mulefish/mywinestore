@@ -1,32 +1,74 @@
 package winestore;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/wines")
 public class WineController {
 
     private final WineRepository wineRepository;
+    private final WineVectorRepository wineVectorRepository;
 
     @Autowired
-    public WineController(WineRepository wineRepository) {
+    public WineController(WineRepository wineRepository, WineVectorRepository wineVectorRepository) {
         this.wineRepository = wineRepository;
+        this.wineVectorRepository = wineVectorRepository;
     }
 
-    // Endpoint to search wines by topnote
+    // Endpoint to search wines by exact topnote match
     @GetMapping("/search")
     public List<Wine> searchWinesByTopnote(@RequestParam String topnote) {
         return wineRepository.findByTopnote(topnote);
     }
 
+    // Endpoint to search wine vectors by criteria
+    @GetMapping("/vectors/findByCriteria")
+    public List<WineVector> searchWineVectors(@RequestParam String criteria) {
+        return wineVectorRepository.findByCriteria(criteria);
+    }
+
+    // Endpoint to find the 5 closest wines based on topnote vector
+    @GetMapping("/vectors/search")
+    public List<Wine> findClosestWines(@RequestParam String topnoteVector) {
+        String[] vectorStrings = topnoteVector.split(",");
+        double[] inputVector = Arrays.stream(vectorStrings).mapToDouble(Double::parseDouble).toArray();
+
+        List<Wine> allWines = wineRepository.findAll();
+        return allWines.stream()
+                .sorted((wine1, wine2) -> Double.compare(
+                        cosineSimilarity(inputVector, parseVector(wine2.getTopnote())),
+                        cosineSimilarity(inputVector, parseVector(wine1.getTopnote()))
+                ))
+                .limit(5)
+                .collect(Collectors.toList());
+    }
+
+    // Helper function to parse topnote strings into vectors
+    private double[] parseVector(String topnote) {
+        return Arrays.stream(topnote.split(","))
+                .mapToDouble(Double::parseDouble)
+                .toArray();
+    }
+
+    // Helper function to calculate cosine similarity
+    private double cosineSimilarity(double[] vec1, double[] vec2) {
+        double dotProduct = 0, magnitudeA = 0, magnitudeB = 0;
+        for (int i = 0; i < vec1.length; i++) {
+            dotProduct += vec1[i] * vec2[i];
+            magnitudeA += vec1[i] * vec1[i];
+            magnitudeB += vec2[i] * vec2[i];
+        }
+        return dotProduct / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB));
+    }
 
     // Endpoint to get the next 10 wines based on page number
     @GetMapping("/next10")
@@ -34,7 +76,6 @@ public class WineController {
         Pageable pageable = PageRequest.of(page, 10);
         return wineRepository.findAll(pageable).getContent();
     }
-
 
     // Get all wines (READ)
     @GetMapping
