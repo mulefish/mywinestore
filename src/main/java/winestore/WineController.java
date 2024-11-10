@@ -24,6 +24,18 @@ public class WineController {
         return wineRepository.findAll();
     }
 
+    // Get all wines (READ) - Explicit /all endpoint
+    @GetMapping("/all")
+    public List<Wine> getAllWinesExplicit() {
+        return wineRepository.findAll();
+    }
+
+    // Get top 10 wines (READ)
+    @GetMapping("/top10")
+    public List<Wine> getTop10Wines() {
+        return wineRepository.findTop10By();
+    }
+
     // Get a wine by ID (READ)
     @GetMapping("/{id}")
     public Wine getWineById(@PathVariable Long id) {
